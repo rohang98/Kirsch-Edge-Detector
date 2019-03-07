@@ -46,3 +46,12 @@ S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
 SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
 W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
 NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
+
+curr dfd
+
+perform max operations to get direction while stimu adding values to get Z values
+Now we need the 3 inputs corresponding to the direction
+	
+
+if the sum remains below 383, return false
+else return true w direction
