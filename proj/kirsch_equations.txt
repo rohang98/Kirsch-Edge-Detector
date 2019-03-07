@@ -1,0 +1,48 @@
+Equations
+N:   5 * (a + b + c) - 3 * (d + e + f + g + h)
+NE:  5 * (b + c + d) - 3 * (e + f + g + h + a)
+E:   5 * (c + d + e) - 3 * (f + g + h + a + b)
+SE:	 5 * (d + e + f) - 3 * (g + h + a + b + c)
+S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
+SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
+W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
+NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
+
+
+ 
+Optimization 1   Using first optimization trick
+z = a + b + c + d + e + f + g + h 
+
+N:   8 * (a + b + c) - 3 * (z)
+NE:  8 * (b + c + d) - 3 * (z)
+E:   8 * (c + d + e) - 3 * (z)
+SE:	 8 * (d + e + f) - 3 * (z)
+S:   8 * (e + f + g) - 3 * (z)
+SW:  8 * (f + g + h) - 3 * (z)
+W:   8 * (g + h + a) - 3 * (z)
+NW:  8 * (h + a + b) - 3 * (z)
+
+
+Optimization 2   Ordering by priority
+W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
+NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
+
+N:   5 * (a + b + c) - 3 * (d + e + f + g + h)
+NE:  5 * (b + c + d) - 3 * (e + f + g + h + a)
+
+E:   5 * (c + d + e) - 3 * (f + g + h + a + b)
+SE:	 5 * (d + e + f) - 3 * (g + h + a + b + c)
+
+S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
+SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
+
+
+Optimization 3
+N:   5 * (a + b + c) - 3 * (d + e + f + g + h)
+NE:  5 * (b + c + d) - 3 * (e + f + g + h + a)
+E:   5 * (c + d + e) - 3 * (f + g + h + a + b)
+SE:	 5 * (d + e + f) - 3 * (g + h + a + b + c)
+S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
+SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
+W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
+NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
