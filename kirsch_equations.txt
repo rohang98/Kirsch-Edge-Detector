@@ -1,4 +1,4 @@
-Equations
+﻿Equations
 N:   5 * (a + b + c) - 3 * (d + e + f + g + h)
 NE:  5 * (b + c + d) - 3 * (e + f + g + h + a)
 E:   5 * (c + d + e) - 3 * (f + g + h + a + b)
@@ -119,6 +119,11 @@ Repeat for other 4 directions
 	
 POSSIBLE OVERALL DFD EQUATION	
 	max (ALL) = 8*(max ( max(((h + a) + max(g,b)), ((b + c) + max(a,d))), max(((d + e) + max(f,c)), (f + g) + max(e,h)))) - 3*z
+Re-written:
+	max (ALL) = 8*(max ( 
+		        max( ( (h+a)+max(g,b) ), ( (b+c)+max(a,d) ) ), 
+		        max( ( (d+e)+max(f,c) ), ( (f+g)+max(e,h) ) ) 
+		    - 3*z
 
 Then lastly check if max > 383
 
