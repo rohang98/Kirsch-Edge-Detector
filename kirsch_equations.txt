@@ -47,6 +47,7 @@ SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
 W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
 NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
 
+<<<<<<< HEAD
 
 
 
@@ -129,3 +130,13 @@ The above calculation will have a handful of Adders, MAX and only 1 SUB.
 	
 FOR DFD DESIGN calculate the sum z using the sums of all of the other sums found since they are disjoint
 
+=======
+curr dfd
+
+perform max operations to get direction while stimu adding values to get Z values
+Now we need the 3 inputs corresponding to the direction
+	
+
+if the sum remains below 383, return false
+else return true w direction
+>>>>>>> 17c6f97588a1d889b13bc4cdc552d253f3e59db0
