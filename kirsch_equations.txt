@@ -46,3 +46,86 @@ S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
 SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
 W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
 NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
+
+
+
+
+
+
+
+Applying Optimizations for Overall DFD Equation
+
+z = a + b + c + d + e + f + h
+
+W:   5 * (g + h + a) - 3 * (b + c + d + e + f)
+NW:  5 * (h + a + b) - 3 * (c + d + e + f + g)
+
+N:   5 * (a + b + c) - 3 * (d + e + f + g + h)
+NE:  5 * (b + c + d) - 3 * (e + f + g + h + a)
+
+E:   5 * (c + d + e) - 3 * (f + g + h + a + b)
+SE:	 5 * (d + e + f) - 3 * (g + h + a + b + c)
+
+S:   5 * (e + f + g) - 3 * (h + a + b + c + d)
+SW:  5 * (f + g + h) - 3 * (a + b + c + d + e)
+
+
+
+Several useful equations to apply in the optimizations are:
+5a − 3b = 8a − 3(a + b)
+max(a − c, b − c) = max(a, b) − c
+max(a + b, b + c) = b + max(a, c)
+
+z = a + b + c + d + e + f + h
+
+1. Apply "5a − 3b = 8a − 3(a + b)" to all equations
+
+	W:   8 * (g + h + a) - 3 * z		
+	NW:  8 * (h + a + b) - 3 * z			
+							   
+	N:   8 * (a + b + c) - 3 * z
+	NE:  8 * (b + c + d) - 3 * z
+							   
+	E:   8 * (c + d + e) - 3 * z
+	SE:	 8 * (d + e + f) - 3 * z
+							   
+	S:   8 * (e + f + g) - 3 * z
+	SW:  8 * (f + g + h) - 3 * z
+
+
+	z = a + b + c + d + e + f + h
+
+2. Apply " max(a − c, b − c) = max(a, b) − c"
+
+	max(W,NW) 	= max(8 * (g + h + a),  8 * (h + a + b)) - 3*z  
+	
+3. Apply  " max(a + b, b + c) = b + max(a, c)"
+
+	max(W,NW)	= 8*((h + a) + max(g,b)) - 3*z
+	
+	
+4. Repeat for other directions
+	max(N,NE) = max(8 * (a + b + c),  8 * (b + c + d)) - 3*z 	= 		8*((b + c) + max(a,d)) - 3*z 
+
+Finding Max of first four directions 
+
+	max (W,NW,N,NE) = 	8 * max(((h + a) + max(g,b)), ((b+c) + max(a ,d))) - 3*z  
+
+Repeat for other 4 directions
+	
+	max(E,SE) = max(8 * (c + d + e),  8 * (d + e + f)) - 3*z = 		 	8*((d + e) + max(f,c)) - 3*z
+	
+	max(S,SW) = max(8 * (e + f + g),  8 * (f + g + h)) - 3*z =  		8*((f + g) + max(e,h)) - 3*z 
+
+	max (E,SE,S,SW) = 	8*max(((d + e) + max(f,c)), (f + g) + max(e,h))) - 3*z
+
+	
+POSSIBLE OVERALL DFD EQUATION	
+	max (ALL) = 8*(max ( max(((h + a) + max(g,b)), ((b + c) + max(a,d))), max(((d + e) + max(f,c)), (f + g) + max(e,h)))) - 3*z
+
+Then lastly check if max > 383
+
+The above calculation will have a handful of Adders, MAX and only 1 SUB.
+	
+FOR DFD DESIGN calculate the sum z using the sums of all of the other sums found since they are disjoint
+
