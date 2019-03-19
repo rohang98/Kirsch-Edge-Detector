@@ -23,6 +23,20 @@ package kirsch_synth_pkg is
   type image_ty is
     array ( 0 to image_height-1, 0 to image_width - 1 )
           of unsigned( 7 downto 0 );
+
+  --------------------------------------------------------------
+  -- state
+  
+  subtype state_ty is std_logic_vector(2 downto 0); 
+
+  constant state_0   : state_ty := "000";
+  constant state_1   : state_ty := "001";
+  constant state_2   : state_ty := "010";
+  constant state_3   : state_ty := "011";
+  constant state_4   : state_ty := "100";
+  constant state_5   : state_ty := "101";
+  constant state_6   : state_ty := "110";
+  constant state_7   : state_ty := "111";
   
   --------------------------------------------------------------
   -- directions

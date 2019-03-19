@@ -1,3 +1,6 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -5,16 +8,6 @@ use ieee.numeric_std.all;
 
 use work.util.all;
 use work.kirsch_synth_pkg.all;
-
--- package state_pkg is
---   subtype state_ty is std_logic_vector(2 downto 0);
---   constant mem_0 : state_ty := "001";
---   constant mem_1 : state_ty := "010";
---   constant mem_2 : state_ty := "100";
---   constant init  : state_ty := "000";
---   constant wr_mem    : state_ty := "101";
---   constant calc  : state_ty := "111";
--- end state_pkg;
 
 entity kirsch is
   port(
@@ -33,8 +26,54 @@ end entity;
 
 
 architecture main of kirsch is
-begin  
+  -- Signal for state
+  -- signal state      : std_logic_vector(7 downto 0);
+  signal state 	  	: state_ty;
+
+  -- indexes to track location in 256 * 256 array
+  signal index_x		: unsigned (7 downto 0);
+  signal index_y		: unsigned (7 downto 0);
+
   
+  -- Variables for storing memory blocks
+  signal mem0	   	  : std_logic_vector(7 downto 0);
+  signal mem0_wen   : std_logic;
+  
+  signal mem1		    : std_logic_vector(7 downto 0);
+  signal mem1_wen   : std_logic;
+  
+  signal mem2	  	  : std_logic_vector(7 downto 0);
+  signal mem2_wen   : std_logic;
+
+begin  
+
+  mem_blk_0 : entity work.mem(main)
+	  port map (
+		  address 	=> 	index_x,
+		  clock  		=>	clk,
+		  data   	=>	std_logic_vector(i_pixel),
+		  wren		  =>	mem0_wen and i_valid,
+		  q   	=> 	mem0
+	  );
+		
+	mem_blk_1 : entity work.mem(main)
+	  port map (
+		  address 	=> 	index_x,
+		  clock  		=>	clk,
+		  data   	=>	std_logic_vector(i_pixel),
+		  wren		  =>	mem1_wen and i_valid,	
+		  q   	=> 	mem1
+	  );
+	
+	mem_blk_2 : entity work.mem(main)
+	  port map (
+		  address 	=> 	index_x,
+		  clock  		=>	clk,
+		  data   	=>	std_logic_vector(i_pixel),
+		  wren		  =>	mem2_wen and i_valid,	
+		  q   	=> 	mem2
+    ); 
+    
 end architecture;
 
 

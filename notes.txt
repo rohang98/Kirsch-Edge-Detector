@@ -1,0 +1,32 @@
+output o_valid when it has been fully processed
+
+o_edge was there an edge in that convolution table
+
+o_dir which direction 
+
+o_mode  what mode is the circ in 
+idle  “10”  - not doing anything
+busy  “11”  - recieving pixels and processing
+reset “01”  - wil stay this so long as reset = 1, then goes to idle
+
+
+for pixels on the perimeter of the image, no output should be asserted
+ - o_edge and o_dir should be 0 with o_valid = 1
+
+o_row row number of the input image
+o_col col number of the input image
+
+
+should be able to take in consecutive images
+
+o_row should remain 255 until the next pixel arrives or reset is set
+
+add check when consuming input to see whether o_row value should be reset
+ - have internal var that is 1 when o_row should be reset on next pixel 
+
+
+
+ optimization
+
+ switch to one hot
+ 
