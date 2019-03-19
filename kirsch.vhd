@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all; 
 use ieee.numeric_std.all;
 
 use work.util.all;
@@ -56,9 +57,9 @@ architecture main of kirsch is
   
 
 begin  
-  mem0_wen <= mem_en(0);
-  mem1_wen <= mem_en(1);
-  mem2_wen <= mem_en(2);
+  mem0_wen <= mem_en(0) and i_valid;
+  mem1_wen <= mem_en(1) and i_valid;
+  mem2_wen <= mem_en(2) and i_valid;
 
   o_row <= index_y;
   
@@ -67,7 +68,7 @@ begin
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
 		  data   	  =>	std_logic_vector(i_pixel),
-		  wren		  =>	mem0_wen and i_valid,
+		  wren		  =>	mem0_wen,
 		  q   	    => 	mem0
 	  );
 		
@@ -76,7 +77,7 @@ begin
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
 		  data   	  =>	std_logic_vector(i_pixel),
-		  wren		  =>	mem1_wen and i_valid,	
+		  wren		  =>	mem1_wen,	
 		  q   	    => 	mem1
 	  );
 	
@@ -85,7 +86,7 @@ begin
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
 		  data   	  =>	std_logic_vector(i_pixel),
-		  wren		  =>	mem2_wen and i_valid,	
+		  wren		  =>	mem2_wen,	
 		  q   	    => 	mem2
     ); 
 
@@ -95,6 +96,7 @@ begin
 
       if reset = '1' then
         index_x <= "00000000";
+        index_y <= "00000000";
         mem_en  <= "001";
         
         state <= idle;
@@ -134,7 +136,11 @@ begin
           elsif index_x = "11111111" then
             index_y <= index_y + 1; 
             index_x <= "00000000"; 
-            mem_en <= mem_en ROL 1;
+            if mem_en = "100" then
+              mem_en <= "001";
+            else 
+              mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
+            end if;
           else 
             index_x <= index_x + 1;
           end if;
