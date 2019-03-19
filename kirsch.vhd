@@ -51,27 +51,27 @@ begin
 	  port map (
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
-		  data   	=>	std_logic_vector(i_pixel),
+		  data   	  =>	std_logic_vector(i_pixel),
 		  wren		  =>	mem0_wen and i_valid,
-		  q   	=> 	mem0
+		  q   	    => 	mem0
 	  );
 		
 	mem_blk_1 : entity work.mem(main)
 	  port map (
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
-		  data   	=>	std_logic_vector(i_pixel),
+		  data   	  =>	std_logic_vector(i_pixel),
 		  wren		  =>	mem1_wen and i_valid,	
-		  q   	=> 	mem1
+		  q   	    => 	mem1
 	  );
 	
 	mem_blk_2 : entity work.mem(main)
 	  port map (
 		  address 	=> 	index_x,
 		  clock  		=>	clk,
-		  data   	=>	std_logic_vector(i_pixel),
+		  data   	  =>	std_logic_vector(i_pixel),
 		  wren		  =>	mem2_wen and i_valid,	
-		  q   	=> 	mem2
+		  q   	    => 	mem2
     ); 
     
 end architecture;
