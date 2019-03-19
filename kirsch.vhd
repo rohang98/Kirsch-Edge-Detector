@@ -36,6 +36,10 @@ architecture main of kirsch is
 
   
   -- Variables for storing memory blocks
+  signal mem_en     : std_logic_vector(2 downto 0) := "001"; 
+  --------------------------------------------------------------
+  -- should be moved to the init state 
+  --------------------------------------------------------------
   signal mem0	   	  : std_logic_vector(7 downto 0);
   signal mem0_wen   : std_logic;
   
@@ -45,8 +49,19 @@ architecture main of kirsch is
   signal mem2	  	  : std_logic_vector(7 downto 0);
   signal mem2_wen   : std_logic;
 
-begin  
+  --------------------------------------------------------------
+  -- Temp var for storing current pixel value
+  signal cur_pixel  : unsigned(7 downto 0);  
+  --------------------------------------------------------------
+  
 
+begin  
+  mem0_wen <= mem_en(0);
+  mem1_wen <= mem_en(1);
+  mem2_wen <= mem_en(2);
+
+  o_row <= index_y;
+  
   mem_blk_0 : entity work.mem(main)
 	  port map (
 		  address 	=> 	index_x,
@@ -73,7 +88,65 @@ begin
 		  wren		  =>	mem2_wen and i_valid,	
 		  q   	    => 	mem2
     ); 
-    
+
+    dfd  : process  
+    begin 
+    wait until rising_edge(clk);
+
+      if reset = '1' then
+        index_x <= "00000000";
+        mem_en  <= "001";
+        
+        state <= idle;
+      else 
+
+      case state is 
+        when idle =>
+          if i_valid = '0' then 
+            state <= idle;
+          else 
+            cur_pixel <= i_pixel;
+            state <= state0;
+          end if; 
+        
+        when state0 =>
+          state <= state1;
+        when state1 =>
+          state <= state2;
+        when state2 =>
+          state <= state3;
+        when state3 =>
+          state <= state4;
+        when state4 =>
+          state <= state5;
+        when state5 =>
+          state <= state6;
+        when state6 =>
+          state <= state7;
+        when state7 =>
+        
+          if index_x = "11111111" AND index_y = "11111111" then 
+            o_valid <= '1';
+            index_x <= "00000000"; 
+            index_y <= "00000000";
+            mem_en <= "001";
+
+          elsif index_x = "11111111" then
+            index_y <= index_y + 1; 
+            index_x <= "00000000"; 
+            mem_en <= mem_en ROL 1;
+          else 
+            index_x <= index_x + 1;
+          end if;
+          state <= idle;
+
+        when others =>
+            state <= idle;
+      end case;
+
+      end if;
+      
+    end process;
 end architecture;
 
 
