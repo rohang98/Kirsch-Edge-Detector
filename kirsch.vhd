@@ -91,6 +91,7 @@ architecture main of kirsch is
   signal a, b, c, d, e, f, g, h         : unsigned(7 downto 0);
   -- registers 
   signal r1, r2, r3, r4, r5, r6, r7     : unsigned(8 downto 0);
+  signal dir_reg, dir_reg_2             : direction_ty;
   --------------------------------------------------------------
   -- Signals for max components
   signal max_1_1, max_1_2, max_1_3           : unsigned(8 downto 0);
@@ -246,14 +247,14 @@ begin
           elsif v(1) = '1' then
             r1 <= r1 + ('0' & b) + ('0' & c);
             r3 <= r2; 
-            -- Sending max(a, d); 
-            max_1_1 <= '0' & a;
-            max_2_1 <= '0' & d;
-            inpd_1_1 <= dir_n;
-            inpd_2_1 <= dir_ne; 
+            -- Sending max(a, d) --> max2; 
+            max_1_2 <= '0' & a;
+            max_2_2 <= '0' & d;
+            inpd_1_2 <= dir_n;
+            inpd_2_2 <= dir_ne; 
           
-            r2 <= out_vmax_1 + ('0' & b) + ('0' & c);
-            dir_max_2 <= out_dmax_1; 
+            r2 <= out_vmax_2 + ('0' & b) + ('0' & c);
+            dir_max_2 <= out_dmax_2; 
         elsif v(2) = '1' then
 
           r1 <= r1 + ('0' & d) + ('0' & e);
@@ -265,7 +266,7 @@ begin
         
           r3 <= out_vmax_2;
           dir_max_2 <= out_dmax_2;
-          
+          dir_reg_2 <= out_dmax_2;
           -- Sending max(f, c) --> max1; 
           max_1_1 <= '0' & f;
           max_2_1 <= '0' & c;
@@ -274,6 +275,7 @@ begin
         
           r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
           dir_max_1 <= out_dmax_1; 
+          dir_reg <= out_dmax_1; 
           
         elsif v(3) = '1' then
           r4 <= r1 + ('0' & f) + ('0' & g);
@@ -285,19 +287,49 @@ begin
           inpd_2_1 <= dir_sw; 
         
           r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
+          dir_max_1 <= out_dmax_1; 
 
           r7 <= r2; 
-          dir_max_1 <= out_dmax_1; 
         end if;
 
         if v(4) = '1' then
-          --df
+          
+          r4 <= r4 + (r4 sll 1); 
+          r5 <= r5; 
+          -- Sending max(r6, r7) --> max3; 
+           max_1_3 <= r6;
+           max_2_3 <= r7;
+           inpd_1_3 <= dir_max_1;
+           inpd_2_3 <= dir_reg; 
+         
+           r6 <= out_vmax_3;
+           dir_max_3 <= out_dmax_3; 
+ 
         elsif v(5) = '1' then
-          -- dfdf
+          r5 <= r4; 
+          
+          -- Sending max(r5, r6) --> max3; 
+          max_1_3 <= r5;
+          max_2_3 <= r6;
+          inpd_1_3 <= out_dmax_3;
+          inpd_2_3 <= dir_reg_2; 
+
+          r4 <= out_vmax_3 sll 3;
+          dir_max_3 <= out_dmax_3; 
+
         elsif v(6) = '1' then
-          -- dfdf
+          r4 <= r5 - r4; 
         elsif v(7) = '1' then
-          --dfdfd
+          if r4 >= 383 then 
+            o_valid <= '1'; 
+            o_edge <= '1';
+            o_dir <= dir_max_3; 
+          else 
+            o_valid <= '1';
+            o_edge  <= '0'; 
+            o_dir   <= "000"; 
+          end if; 
+
           if index_x = "11111111" AND index_y = "11111111" then 
             o_valid <= '1';
             index_x <= "00000000"; 
@@ -311,9 +343,7 @@ begin
               mem_en <= "001";
             else 
               mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
-            end if;
-          else 
-          
+            end if;  
           end if;
         end if;
       end if;
