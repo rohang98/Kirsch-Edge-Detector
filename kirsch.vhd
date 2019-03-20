@@ -2,6 +2,40 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.util.all;
+use work.kirsch_synth_pkg.all;
+
+entity max is 
+  port(
+    input_1   : in unsigned(8 downto 0);
+    input_2   : in unsigned(8 downto 0);
+    inp1_dir  : in direction_ty;
+    inp2_dir  : in direction_ty;
+   
+    out_val   : out unsigned(8 downto 0);
+    out_dir   : out direction_ty
+  );
+end entity;
+
+architecture main of max is 
+begin 
+
+  process(input_1, input_2) begin
+    if input_1 >= input_2 then 
+      out_val <= input_1; 
+      out_dir <= inp1_dir; 
+    else 
+      out_val <= input_2; 
+      out_dir <= inp2_dir; 
+    end if;
+  end process; 
+
+end architecture;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all; 
@@ -291,36 +325,3 @@ begin
 end architecture;
 
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
-use work.util.all;
-use work.kirsch_synth_pkg.all;
-
-entity max is 
-  port(
-    input_1   : in unsigned(8 downto 0);
-    input_2   : in unsigned(8 downto 0);
-    inp1_dir  : in direction_ty;
-    inp2_dir  : in direction_ty;
-   
-    out_val   : out unsigned(8 downto 0);
-    out_dir   : out direction_ty
-  );
-end entity;
-
-architecture main of max is 
-begin 
-
-  process(input_1, input_2) begin
-    if input_1 >= input_2 then 
-      out_val <= input_1; 
-      out_dir <= inp1_dir; 
-    else 
-      out_val <= input_2; 
-      out_dir <= inp2_dir; 
-    end if;
-  end process; 
-
-end architecture;
