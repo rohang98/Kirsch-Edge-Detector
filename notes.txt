@@ -25,8 +25,8 @@ add check when consuming input to see whether o_row value should be reset
  - have internal var that is 1 when o_row should be reset on next pixel 
 
 
+for testing
 
- optimization
+uw-sim -Gtest_num=? kirsch.uwp
 
- switch to one hot
- 
+ted_to_bmp tests/res?_sim.ted

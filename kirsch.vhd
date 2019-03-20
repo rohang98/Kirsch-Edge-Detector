@@ -293,8 +293,7 @@ begin
           r7 <= r2; 
         end if;
 
-        if v(4) = '1' then
-          
+        if v(4) = '1' then 
           r4 <= r4 + (r4 sll 1); 
           r5 <= r5; 
           -- Sending max(r6, r7) --> max3; 
