@@ -23,11 +23,6 @@ package kirsch_synth_pkg is
   type image_ty is
     array ( 0 to image_height-1, 0 to image_width - 1 )
           of unsigned( 7 downto 0 );
-
-  --------------------------------------------------------------
-  -- state
-  
-  type state_ty is (idle, state0, state1, state2,  state3,  state4,  state5,  state6, state7 );
    
   --------------------------------------------------------------
   -- directions
