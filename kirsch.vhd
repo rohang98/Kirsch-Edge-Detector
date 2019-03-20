@@ -243,6 +243,7 @@ begin
           dir_max_1 <= out_dmax_1;
 
           index_x <= index_x + 1;
+          o_valid <= '0';
           
           elsif v(1) = '1' then
             r1 <= r1 + ('0' & b) + ('0' & c);
