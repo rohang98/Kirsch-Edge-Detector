@@ -67,7 +67,6 @@ architecture main of kirsch is
   -- indexes to track location in 256 * 256 array
   signal index_x		: unsigned (7 downto 0);
   signal index_y		: unsigned (7 downto 0);
-
   
   -- Variables for storing memory blocks
   signal mem_en     : std_logic_vector(2 downto 0); 
@@ -82,13 +81,9 @@ architecture main of kirsch is
   
   signal mem2	  	  : std_logic_vector(7 downto 0);
   signal mem2_wen   : std_logic;
-
-  --------------------------------------------------------------
-  -- Temp var for storing current pixel value
-  signal cur_pixel  : unsigned(7 downto 0);  
   --------------------------------------------------------------
   -- Inputs for the DFD
-  signal a, b, c, d, e, f, g, h         : unsigned(7 downto 0);
+  signal a, b, c, d, e, f, g, h, i         : unsigned(7 downto 0);
   -- registers 
   signal r1, r2, r3, r4, r5, r6, r7     : unsigned(8 downto 0);
   signal dir_reg, dir_reg_2             : direction_ty;
@@ -186,66 +181,43 @@ begin
       else
       
         if v(0) = '1' then
-          cur_pixel <= i_pixel;
-          if index_y >= 2 then
-            
+
+            a <= b;
+            b <= c;
+            h <= i;
+            i <= d;
+            g <= f;
+            f <= e;
+            e <= i_pixel;
+
             if mem_en(0) = '1' then
-              if index_x mod 3 = "000" then 
-                a <= unsigned(mem0); 
-                h <= unsigned(mem1);
-                g <= unsigned(mem2); 
-              elsif index_x mod 3 = "001" then
-                b <= unsigned(mem0);
-                f <= unsigned(mem2);
-              else 
-                c <= unsigned(mem0); 
-                d <= unsigned(mem1);
-                e <= unsigned(mem2);
-              end if; 
+              c <= unsigned(mem1);
+              d <= unsigned(mem2);
             elsif mem_en(1) = '1' then 
-              if index_x mod 3 = "000" then 
-                b <= unsigned(mem0);
-                f <= unsigned(mem2);
-              elsif index_x mod 3 = "001" then
-                c <= unsigned(mem0); 
-                d <= unsigned(mem1);
-                e <= unsigned(mem2);
-              else 
-                a <= unsigned(mem0); 
-                h <= unsigned(mem1);
-                g <= unsigned(mem2); 
-            end if; 
+              c <= unsigned(mem2);
+              d <= unsigned(mem0);
             else 
-              if index_x mod 3 = "000" then 
-                c <= unsigned(mem0); 
-                d <= unsigned(mem1);
-                e <= unsigned(mem2);
-              elsif index_x mod 3 = "001" then
-                a <= unsigned(mem0); 
-                h <= unsigned(mem1);
-                g <= unsigned(mem2); 
-              else 
-                b <= unsigned(mem0);
-                f <= unsigned(mem2);
-              end if; 
-            end if; 
+              c <= unsigned(mem0);
+              d <= unsigned(mem1);
+            end if;
+          
+          if index_y >= 2 then
+            r1 <= ('0' & a) + ('0' & h); 
+          
+            -- Sending max(g, b); 
+            max_1_1 <= '0' & g;
+            max_2_1 <= '0' & b;
+            inpd_1_1 <= dir_w;
+            inpd_2_1 <= dir_nw; 
+            
+            r2 <= out_vmax_1 + ('0' & a) + ('0' & h);
+            dir_max_1 <= out_dmax_1;
           end if;
-          
-          r1 <= ('0' & a) + ('0' & h); 
-         
-          -- Sending max(g, b); 
-          max_1_1 <= '0' & g;
-          max_2_1 <= '0' & b;
-          inpd_1_1 <= dir_w;
-          inpd_2_1 <= dir_nw; 
-          
-          r2 <= out_vmax_1 + ('0' & a) + ('0' & h);
-          dir_max_1 <= out_dmax_1;
 
           index_x <= index_x + 1;
           o_valid <= '0';
           
-          elsif v(1) = '1' then
+        elsif v(1) = '1' then
             r1 <= r1 + ('0' & b) + ('0' & c);
             r3 <= r2; 
             -- Sending max(a, d) --> max2; 
