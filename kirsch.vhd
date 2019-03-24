@@ -181,7 +181,49 @@ begin
       else
       
         if v(0) = '1' then
-
+          if index_x = 0  then
+            if mem_en(0) = '1' then
+              a <= i_pixel;
+              h <= unsigned(mem2);
+              g <= unsigned(mem0);
+            elsif mem_en(1) = '1' then 
+              a <= unsigned(mem2);
+              h <= i_pixel;
+              g <= unsigned(mem1);
+            else 
+              a <= unsigned(mem0);
+              h <= unsigned(mem1);
+              g <= i_pixel;
+            end if;
+          elsif index_x = 1 then
+            if mem_en(0) = '1' then
+              b <= i_pixel;
+              i <= unsigned(mem2);
+              f <= unsigned(mem0);
+            elsif mem_en(1) = '1' then 
+              b <= unsigned(mem2);
+              i <= i_pixel;
+              f <= unsigned(mem1);
+            else 
+              b <= unsigned(mem0);
+              i <= unsigned(mem1);
+              f <= i_pixel;
+            end if;
+          elsif index_x = 2 then
+            if mem_en(0) = '1' then
+              c <= i_pixel;
+              d <= unsigned(mem2);
+              e <= unsigned(mem0);
+            elsif mem_en(1) = '1' then 
+              c <= unsigned(mem2);
+              d <= i_pixel;
+              e <= unsigned(mem1);
+            else 
+              c <= unsigned(mem0);
+              d <= unsigned(mem1);
+              e <= i_pixel;
+            end if;
+          else
             a <= b;
             b <= c;
             h <= i;
@@ -189,7 +231,6 @@ begin
             g <= f;
             f <= e;
             e <= i_pixel;
-
             if mem_en(0) = '1' then
               c <= unsigned(mem1);
               d <= unsigned(mem2);
@@ -200,8 +241,9 @@ begin
               c <= unsigned(mem0);
               d <= unsigned(mem1);
             end if;
+          end if;
           
-          if index_y >= 2 then
+          if index_x >= 2 and index_y >= 2 then
             r1 <= ('0' & a) + ('0' & h); 
           
             -- Sending max(g, b); 
@@ -249,7 +291,7 @@ begin
           r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
           dir_max_1 <= out_dmax_1; 
           dir_reg <= out_dmax_1; 
-          
+
         elsif v(3) = '1' then
           r4 <= r1 + ('0' & f) + ('0' & g);
           r5 <= r3; 
@@ -263,6 +305,11 @@ begin
           dir_max_1 <= out_dmax_1; 
 
           r7 <= r2; 
+
+          -- Reset registers
+          --r1 <= "000000000";
+          -- r2 <= "000000000";
+          -- r3 <= "000000000";
         end if;
 
         if v(4) = '1' then 
@@ -283,27 +330,36 @@ begin
           -- Sending max(r5, r6) --> max3; 
           max_1_3 <= r5;
           max_2_3 <= r6;
-          inpd_1_3 <= out_dmax_3;
-          inpd_2_3 <= dir_reg_2; 
+          inpd_1_3 <= dir_reg_2;
+          inpd_2_3 <= out_dmax_3; 
 
           r4 <= out_vmax_3 sll 3;
           dir_max_3 <= out_dmax_3; 
 
         elsif v(6) = '1' then
-          r4 <= r5 - r4; 
+          r4 <= r4 - r5; 
         elsif v(7) = '1' then
           if r4 >= 383 then 
             o_valid <= '1'; 
             o_edge <= '1';
             o_dir <= dir_max_3; 
+            -- Reset registers
+          --  r4 <= "000000000";
+          --  r5 <= "000000000";
+          --  r6 <= "000000000";
+          --  r7 <= "000000000";
           else 
             o_valid <= '1';
             o_edge  <= '0'; 
             o_dir   <= "000"; 
+            -- Reset registers
+          --  r4 <= "000000000";
+          --  r5 <= "000000000";
+          --  r6 <= "000000000";
+          --  r7 <= "000000000";
           end if; 
 
           if index_x = "11111111" AND index_y = "11111111" then 
-            o_valid <= '1';
             index_x <= "00000000"; 
             index_y <= "00000000";
             mem_en <= "001";
