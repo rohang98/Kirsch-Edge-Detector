@@ -62,7 +62,7 @@ end entity;
 
 architecture main of kirsch is
   -- Signal for state (valid-bit encoding)
-  signal v          : std_logic_vector(7 downto 0);
+  signal v          : unsigned(7 downto 0);
 
   -- indexes to track location in 256 * 256 array
   signal index_x		: unsigned (7 downto 0);
@@ -107,7 +107,6 @@ begin
   mem1_wen <= mem_en(1) and i_valid;
   mem2_wen <= mem_en(2) and i_valid;
   
-  v(0) <= i_valid;
 
   o_row <= index_y;
   
@@ -170,97 +169,72 @@ begin
         out_val   => out_vmax_3,
         out_dir   => out_dmax_3
       ); 
+			
+		process begin
+			wait until rising_edge(clk);
+				if reset = '1' then
+					index_x <= "00000000";
+					index_y <= "00000000";
+					mem_en  <= "001";
+				else
+					if i_valid = '1' then
+							a <= b;
+							b <= c;
+							h <= i;
+							i <= d;
+							g <= f;
+							f <= e;
+							e <= i_pixel;
+							if mem_en(0) = '1' then
+								c <= unsigned(mem1);
+								d <= unsigned(mem2);
+							elsif mem_en(1) = '1' then 
+								c <= unsigned(mem2);
+								d <= unsigned(mem0);
+							else 
+								c <= unsigned(mem0);
+								d <= unsigned(mem1);
+							end if;
+								
+							if index_x = "11111111" AND index_y = "11111111" then 
+								index_x <= "00000000"; 
+								index_y <= "00000000";
+								mem_en <= "001";
+
+							elsif index_x = "11111111" and index_y < "11111111" then
+								index_y <= index_y + 1; 
+								index_x <= "00000000"; 
+								if mem_en = "100" then
+									mem_en <= "001";
+								else 
+									mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
+								end if;  
+							end if;
+							index_x <= index_x + 1;
+					end if;
+			end if;
+		end process;
+		
+		
 
     process begin 
       wait until rising_edge(clk);
-
-      if reset = '1' then
-        index_x <= "00000000";
-        index_y <= "00000000";
-        mem_en  <= "001";
-      else
-      
         if v(0) = '1' then
-          if index_x = 0  then
-            if mem_en(0) = '1' then
-              a <= i_pixel;
-              h <= unsigned(mem2);
-              g <= unsigned(mem0);
-            elsif mem_en(1) = '1' then 
-              a <= unsigned(mem2);
-              h <= i_pixel;
-              g <= unsigned(mem1);
-            else 
-              a <= unsigned(mem0);
-              h <= unsigned(mem1);
-              g <= i_pixel;
-            end if;
-          elsif index_x = 1 then
-            if mem_en(0) = '1' then
-              b <= i_pixel;
-              i <= unsigned(mem2);
-              f <= unsigned(mem0);
-            elsif mem_en(1) = '1' then 
-              b <= unsigned(mem2);
-              i <= i_pixel;
-              f <= unsigned(mem1);
-            else 
-              b <= unsigned(mem0);
-              i <= unsigned(mem1);
-              f <= i_pixel;
-            end if;
-          elsif index_x = 2 then
-            if mem_en(0) = '1' then
-              c <= i_pixel;
-              d <= unsigned(mem2);
-              e <= unsigned(mem0);
-            elsif mem_en(1) = '1' then 
-              c <= unsigned(mem2);
-              d <= i_pixel;
-              e <= unsigned(mem1);
-            else 
-              c <= unsigned(mem0);
-              d <= unsigned(mem1);
-              e <= i_pixel;
-            end if;
-          else
-            a <= b;
-            b <= c;
-            h <= i;
-            i <= d;
-            g <= f;
-            f <= e;
-            e <= i_pixel;
-            if mem_en(0) = '1' then
-              c <= unsigned(mem1);
-              d <= unsigned(mem2);
-            elsif mem_en(1) = '1' then 
-              c <= unsigned(mem2);
-              d <= unsigned(mem0);
-            else 
-              c <= unsigned(mem0);
-              d <= unsigned(mem1);
-            end if;
-          end if;
-          
-          if index_x >= 2 and index_y >= 2 then
-            r1 <= ('0' & a) + ('0' & h); 
-          
-            -- Sending max(g, b); 
-            max_1_1 <= '0' & g;
-            max_2_1 <= '0' & b;
-            inpd_1_1 <= dir_w;
-            inpd_2_1 <= dir_nw; 
-            
-            r2 <= out_vmax_1 + ('0' & a) + ('0' & h);
-            dir_max_1 <= out_dmax_1;
-          end if;
-
-          index_x <= index_x + 1;
-          o_valid <= '0';
-          
+					if index_x >= 3 and index_y >= 2 then
+							r1 <= ('0' & a) + ('0' & h); 
+						
+							-- Sending max(g, b); 
+							max_1_1 <= '0' & g;
+							max_2_1 <= '0' & b;
+							inpd_1_1 <= dir_w;
+							inpd_2_1 <= dir_nw; 
+							
+							r2 <= out_vmax_1 + ('0' & a) + ('0' & h);
+							dir_max_1 <= out_dmax_1;
+					end if;      
         elsif v(1) = '1' then
-            r1 <= r1 + ('0' & b) + ('0' & c);
+					if index_x >= 3 and index_y >= 2 then
+						r1 <= r1 + ('0' & b) + ('0' & c);
             r3 <= r2; 
             -- Sending max(a, d) --> max2; 
             max_1_2 <= '0' & a;
@@ -270,116 +244,119 @@ begin
           
             r2 <= out_vmax_2 + ('0' & b) + ('0' & c);
             dir_max_2 <= out_dmax_2; 
+					end if;
         elsif v(2) = '1' then
-
-          r1 <= r1 + ('0' & d) + ('0' & e);
-          -- Sending max(r3, r2) --> max2; 
-          max_1_2 <= r3;
-          max_2_2 <= r2;
-          inpd_1_2 <= dir_max_1;
-          inpd_2_2 <= dir_max_2; 
-        
-          r3 <= out_vmax_2;
-          dir_max_2 <= out_dmax_2;
-          dir_reg_2 <= out_dmax_2;
-          -- Sending max(f, c) --> max1; 
-          max_1_1 <= '0' & f;
-          max_2_1 <= '0' & c;
-          inpd_1_1 <= dir_se;
-          inpd_2_1 <= dir_e; 
-        
-          r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
-          dir_max_1 <= out_dmax_1; 
-          dir_reg <= out_dmax_1; 
-
+					if index_x >= 3 and index_y >= 2 then
+						r1 <= r1 + ('0' & d) + ('0' & e);
+						-- Sending max(r3, r2) --> max2; 
+						max_1_2 <= r3;
+						max_2_2 <= r2;
+						inpd_1_2 <= dir_max_1;
+						inpd_2_2 <= dir_max_2; 
+					
+						r3 <= out_vmax_2;
+						dir_max_2 <= out_dmax_2;
+						dir_reg_2 <= out_dmax_2;
+						-- Sending max(f, c) --> max1; 
+						max_1_1 <= '0' & f;
+						max_2_1 <= '0' & c;
+						inpd_1_1 <= dir_se;
+						inpd_2_1 <= dir_e; 
+					
+						r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
+						dir_max_1 <= out_dmax_1; 
+						dir_reg <= out_dmax_1; 
+					end if;
         elsif v(3) = '1' then
-          r4 <= r1 + ('0' & f) + ('0' & g);
-          r5 <= r3; 
-          -- Sending max(e, h) --> max1; 
-          max_1_1 <= '0' & e;
-          max_2_1 <= '0' & h;
-          inpd_1_1 <= dir_s;
-          inpd_2_1 <= dir_sw; 
-        
-          r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
-          dir_max_1 <= out_dmax_1; 
+					if index_x >= 3 and index_y >= 2 then
+						r4 <= r1 + ('0' & f) + ('0' & g);
+						r5 <= r3; 
+						-- Sending max(e, h) --> max1; 
+						max_1_1 <= '0' & e;
+						max_2_1 <= '0' & h;
+						inpd_1_1 <= dir_s;
+						inpd_2_1 <= dir_sw; 
+					
+						r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
+						dir_max_1 <= out_dmax_1; 
 
-          r7 <= r2; 
+						r7 <= r2; 
+			
+						-- Reset registers
+						--r1 <= "000000000";
+						-- r2 <= "000000000";
+						-- r3 <= "000000000";
+						end if;
+						o_valid <= '1'; 
 
-          -- Reset registers
-          --r1 <= "000000000";
-          -- r2 <= "000000000";
-          -- r3 <= "000000000";
+					
         end if;
 
         if v(4) = '1' then 
-          r4 <= r4 + (r4 sll 1); 
-          r5 <= r5; 
-          -- Sending max(r6, r7) --> max3; 
-           max_1_3 <= r6;
-           max_2_3 <= r7;
-           inpd_1_3 <= dir_max_1;
-           inpd_2_3 <= dir_reg; 
-         
-           r6 <= out_vmax_3;
-           dir_max_3 <= out_dmax_3; 
- 
+					if index_x >= 3 and index_y >= 2 then
+						r4 <= r4 + (r4 sll 1); 
+						r5 <= r5; 
+						-- Sending max(r6, r7) --> max3; 
+						 max_1_3 <= r6;
+						 max_2_3 <= r7;
+						 inpd_1_3 <= dir_max_1;
+						 inpd_2_3 <= dir_reg; 
+					 
+						 r6 <= out_vmax_3;
+						 dir_max_3 <= out_dmax_3; 
+					end if;
         elsif v(5) = '1' then
-          r5 <= r4; 
-          
-          -- Sending max(r5, r6) --> max3; 
-          max_1_3 <= r5;
-          max_2_3 <= r6;
-          inpd_1_3 <= dir_reg_2;
-          inpd_2_3 <= out_dmax_3; 
+					if index_x >= 3 and index_y >= 2 then
+							r5 <= r4; 
+							
+							-- Sending max(r5, r6) --> max3; 
+							max_1_3 <= r5;
+							max_2_3 <= r6;
+							inpd_1_3 <= dir_reg_2;
+							inpd_2_3 <= out_dmax_3; 
 
-          r4 <= out_vmax_3 sll 3;
-          dir_max_3 <= out_dmax_3; 
-
+							r4 <= out_vmax_3 sll 3;
+							dir_max_3 <= out_dmax_3; 
+					end if;
         elsif v(6) = '1' then
-          r4 <= r4 - r5; 
+						r4 <= r4 - r5; 
         elsif v(7) = '1' then
-          if r4 >= 383 then 
-            o_valid <= '1'; 
-            o_edge <= '1';
-            o_dir <= dir_max_3; 
-            -- Reset registers
-          --  r4 <= "000000000";
-          --  r5 <= "000000000";
-          --  r6 <= "000000000";
-          --  r7 <= "000000000";
-          else 
-            o_valid <= '1';
-            o_edge  <= '0'; 
-            o_dir   <= "000"; 
-            -- Reset registers
-          --  r4 <= "000000000";
-          --  r5 <= "000000000";
-          --  r6 <= "000000000";
-          --  r7 <= "000000000";
-          end if; 
-
-          if index_x = "11111111" AND index_y = "11111111" then 
-            index_x <= "00000000"; 
-            index_y <= "00000000";
-            mem_en <= "001";
-
-          elsif index_x = "11111111" and index_y < "11111111" then
-            index_y <= index_y + 1; 
-            index_x <= "00000000"; 
-            if mem_en = "100" then
-              mem_en <= "001";
-            else 
-              mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
-            end if;  
-          end if;
-        end if;
-      end if;
-      v(7 downto 1) <= v(6 downto 0);	
-  
-      
+					if index_x >= 3 and index_y >= 2 then
+						if r4 >= 383 then 
+							o_valid <= '1'; 
+							o_edge <= '1';
+							o_dir <= dir_max_3; 
+							-- Reset registers
+						--  r4 <= "000000000";
+						--  r5 <= "000000000";
+						--  r6 <= "000000000";
+						--  r7 <= "000000000";
+						else 
+							o_valid <= '1';
+							o_edge  <= '0'; 
+							o_dir   <= "000"; 
+							-- Reset registers
+						--  r4 <= "000000000";
+						--  r5 <= "000000000";
+						--  r6 <= "000000000";
+						--  r7 <= "000000000";
+						end if; 
+					end if;
+					
+				end if;
       
     end process;
+		
+		process begin 
+      wait until rising_edge(clk);	
+			if index_x >= 2 and index_y >= 2 then
+					v(0) <= i_valid;	
+			end if;
+				v(7 downto 1) <= v(6 downto 0);	
+		end process;
+
+		
+		
 end architecture;
 
 
