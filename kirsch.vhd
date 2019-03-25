@@ -221,7 +221,6 @@ begin
     process begin 
       wait until rising_edge(clk);
         if v(0) = '1' then
-					if index_x >= 3 and index_y >= 2 then
 							r1 <= ("00" & a) + ("00" & h); 
 							if g >= b then 
 								r2 <= ("00" & g) + ("00" & a) + ("00" & h);	
@@ -230,9 +229,7 @@ begin
 								r2 <= ("00" & b) + ("00" & a) + ("00" & h);								
 								dir_max_1 <= dir_nw;		
 							end if;
-						end if;
         elsif v(1) = '1' then
-					if index_x >= 3 and index_y >= 2 then
 						r1 <= r1 + ("00" & b) + ("00" & c);
             r3 <= r2; 
    
@@ -243,9 +240,7 @@ begin
 							r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
 							dir_max_2 <= dir_nw;		
 						end if;
-					end if;
         elsif v(2) = '1' then
-					if index_x >= 3 and index_y >= 2 then
 						r1 <= r1 + ("00" & d) + ("00" & e);				
 						if r3 >= r2 then 
 							r3 <= r3;
@@ -265,10 +260,7 @@ begin
 							dir_max_1 <= dir_e;		
 							dir_reg <= dir_e;
 						end if;						
-					end if;
-        elsif v(3) = '1' then
-					if index_x >= 3 and index_y >= 2 then
-						
+        elsif v(3) = '1' then						
 						r4 <= r1 + ("00" & f) + ("00" & g);
 						r5 <= r3; 
 						if e >= h then 
@@ -284,11 +276,9 @@ begin
 						--r1 <= "000000000";
 						-- r2 <= "000000000";
 						-- r3 <= "000000000";
-						end if;
         end if;
 
         if v(4) = '1' then 
-					if index_x >= 3 and index_y >= 2 then
 						r4 <= r4 + (r4 sll 1); 
 						r5 <= r5; 							 
 						 if r6 >= r7 then 
@@ -298,9 +288,7 @@ begin
 							r6 <= r7;
 							dir_max_3 <= dir_reg;		
 						end if;
-					end if;
         elsif v(5) = '1' then
-					if index_x >= 3 and index_y >= 2 then
 							r5 <= r4; 					
 							if r5 >= r6 then 
 								r4 <= r5 sll 3;
@@ -309,11 +297,9 @@ begin
 								r6 <= r7;
 								dir_max_3 <= dir_max_3;		
 							end if;
-					end if;
         elsif v(6) = '1' then
 						r4 <= r4 - r5; 
-        elsif v(7) = '1' then
-					if index_x >= 3 and index_y >= 2 then
+				elsif v(7) = '1' then
 						if r4 >= 383 then 
 							o_valid <= '1'; 
 							o_edge <= '1';
@@ -333,7 +319,6 @@ begin
 						--  r6 <= "000000000";
 						--  r7 <= "000000000";
 						end if; 
-					end if;
 				end if;
       	if v(7) /= '1' then
 						o_valid <= '0'; 
