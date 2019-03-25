@@ -62,7 +62,7 @@ end entity;
 
 architecture main of kirsch is
   -- Signal for state (valid-bit encoding)
-  signal v          : unsigned(7 downto 0);
+  signal v          : std_logic_vector(7 downto 0);
 
   -- indexes to track location in 256 * 256 array
   signal index_x		: unsigned (7 downto 0);
@@ -85,7 +85,7 @@ architecture main of kirsch is
   -- Inputs for the DFD
   signal a, b, c, d, e, f, g, h, i         : unsigned(7 downto 0);
   -- registers 
-  signal r1, r2, r3, r4, r5, r6, r7     : unsigned(8 downto 0);
+  signal r1, r2, r3, r4, r5, r6, r7     : unsigned(9 downto 0);
   signal dir_reg, dir_reg_2             : direction_ty;
   --------------------------------------------------------------
   -- Signals for max components
@@ -137,38 +137,38 @@ begin
 		  q   	    => 	mem2
     ); 
 
-    max_1 : entity work.max(main)
-      port map (
-        input_1   => max_1_1,
-        input_2   => max_2_1,
-        inp1_dir  => inpd_1_1,
-        inp2_dir  => inpd_2_1,
+    -- max_1 : entity work.max(main)
+      -- port map (
+        -- input_1   => max_1_1,
+        -- input_2   => max_2_1,
+        -- inp1_dir  => inpd_1_1,
+        -- inp2_dir  => inpd_2_1,
       
-        out_val   => out_vmax_1,
-        out_dir   => out_dmax_1
-      );    
+        -- out_val   => out_vmax_1,
+        -- out_dir   => out_dmax_1
+      -- );    
 
-    max_2 : entity work.max(main)
-      port map (
-        input_1   => max_1_2,
-        input_2   => max_2_2,
-        inp1_dir  => inpd_1_2,
-        inp2_dir  => inpd_2_2,
+    -- max_2 : entity work.max(main)
+      -- port map (
+        -- input_1   => max_1_2,
+        -- input_2   => max_2_2,
+        -- inp1_dir  => inpd_1_2,
+        -- inp2_dir  => inpd_2_2,
       
-        out_val   => out_vmax_2,
-        out_dir   => out_dmax_2
-      ); 
+        -- out_val   => out_vmax_2,
+        -- out_dir   => out_dmax_2
+      -- ); 
 
-    max_3 : entity work.max(main)
-      port map (
-        input_1   => max_1_3,
-        input_2   => max_2_3,
-        inp1_dir  => inpd_1_3,
-        inp2_dir  => inpd_2_3,
+    -- max_3 : entity work.max(main)
+      -- port map (
+        -- input_1   => max_1_3,
+        -- input_2   => max_2_3,
+        -- inp1_dir  => inpd_1_3,
+        -- inp2_dir  => inpd_2_3,
       
-        out_val   => out_vmax_3,
-        out_dir   => out_dmax_3
-      ); 
+        -- out_val   => out_vmax_3,
+        -- out_dir   => out_dmax_3
+      -- ); 
 			
 		process begin
 			wait until rising_edge(clk);
@@ -221,65 +221,104 @@ begin
       wait until rising_edge(clk);
         if v(0) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-							r1 <= ('0' & a) + ('0' & h); 
+							r1 <= ("00" & a) + ("00" & h); 
 						
 							-- Sending max(g, b); 
-							max_1_1 <= '0' & g;
-							max_2_1 <= '0' & b;
-							inpd_1_1 <= dir_w;
-							inpd_2_1 <= dir_nw; 
-							
-							r2 <= out_vmax_1 + ('0' & a) + ('0' & h);
-							dir_max_1 <= out_dmax_1;
-					end if;      
+							-- max_1_1 <= '0' & g;
+							-- max_2_1 <= '0' & b;
+							-- inpd_1_1 <= dir_w;
+							-- inpd_2_1 <= dir_nw; 
+							if g >= b then 
+								r2 <= ("00" & g) + ("00" & a) + ("00" & h);	
+								dir_max_1 <= dir_w;															
+							else 
+								r2 <= ("00" & b) + ("00" & a) + ("00" & h);								
+								dir_max_1 <= dir_nw;		
+							end if;
+						end if;
         elsif v(1) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-						r1 <= r1 + ('0' & b) + ('0' & c);
+						r1 <= r1 + ("00" & b) + ("00" & c);
             r3 <= r2; 
             -- Sending max(a, d) --> max2; 
-            max_1_2 <= '0' & a;
-            max_2_2 <= '0' & d;
-            inpd_1_2 <= dir_n;
-            inpd_2_2 <= dir_ne; 
+            -- max_1_2 <= '0' & a;
+            -- max_2_2 <= '0' & d;
+            -- inpd_1_2 <= dir_n;
+            -- inpd_2_2 <= dir_ne; 
           
-            r2 <= out_vmax_2 + ('0' & b) + ('0' & c);
-            dir_max_2 <= out_dmax_2; 
+          --  r2 <= out_vmax_2 + ('0' & b) + ('0' & c);
+						
+					if a >= d then 
+						r2 <= ("00" & a) + ("00" & b) + ("00" & c);	
+						dir_max_2 <= dir_w;															
+					else 
+						r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
+						dir_max_2 <= dir_nw;		
+					end if;
 					end if;
         elsif v(2) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-						r1 <= r1 + ('0' & d) + ('0' & e);
+						r1 <= r1 + ("00" & d) + ("00" & e);
 						-- Sending max(r3, r2) --> max2; 
-						max_1_2 <= r3;
-						max_2_2 <= r2;
-						inpd_1_2 <= dir_max_1;
-						inpd_2_2 <= dir_max_2; 
+						-- max_1_2 <= r3;
+						-- max_2_2 <= r2;
+						-- inpd_1_2 <= dir_max_1;
+						-- inpd_2_2 <= dir_max_2; 
 					
-						r3 <= out_vmax_2;
-						dir_max_2 <= out_dmax_2;
-						dir_reg_2 <= out_dmax_2;
+						-- r3 <= out_vmax_2;
+						-- dir_max_2 <= out_dmax_2;
+						-- dir_reg_2 <= out_dmax_2;
+						
+						if r3 >= r2 then 
+							r3 <= r3;
+							dir_max_2 <= dir_max_1;		
+							dir_reg_2 <= dir_max_1;
+						else 
+							r3 <= r2;
+							dir_max_2 <= dir_max_2;		
+							dir_reg_2 <= dir_max_2;
+						end if;
 						-- Sending max(f, c) --> max1; 
-						max_1_1 <= '0' & f;
-						max_2_1 <= '0' & c;
-						inpd_1_1 <= dir_se;
-						inpd_2_1 <= dir_e; 
+						-- max_1_1 <= '0' & f;
+						-- max_2_1 <= '0' & c;
+						-- inpd_1_1 <= dir_se;
+						-- inpd_2_1 <= dir_e; 
 					
-						r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
-						dir_max_1 <= out_dmax_1; 
-						dir_reg <= out_dmax_1; 
+						-- r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
+						-- dir_max_1 <= out_dmax_1; 
+						-- dir_reg <= out_dmax_1;
+
+						if f >= c then 
+							r2 <= ("00" & f) + ("00" & d) + ("00" & e);	
+							dir_max_1 <= dir_se;	
+							dir_reg	<= dir_se	;
+						else 
+							r2 <= ("00" & c) + ("00" & d) + ("00" & e);								
+							dir_max_1 <= dir_e;		
+							dir_reg <= dir_e;
+						end if;						
 					end if;
         elsif v(3) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-						r4 <= r1 + ('0' & f) + ('0' & g);
+						
+						r4 <= r1 + ("00" & f) + ("00" & g);
 						r5 <= r3; 
 						-- Sending max(e, h) --> max1; 
-						max_1_1 <= '0' & e;
-						max_2_1 <= '0' & h;
-						inpd_1_1 <= dir_s;
-						inpd_2_1 <= dir_sw; 
+						-- max_1_1 <= '0' & e;
+						-- max_2_1 <= '0' & h;
+						-- inpd_1_1 <= dir_s;
+						-- inpd_2_1 <= dir_sw; 
 					
-						r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
-						dir_max_1 <= out_dmax_1; 
+						-- r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
+						-- dir_max_1 <= out_dmax_1; 
 
+						if e >= h then 
+							r6 <= ("00" & e) + ("00" & f) + ("00" & g);
+							dir_max_1 <= dir_s;		
+						else 
+							r6 <= ("00" & h) + ("00" & f) + ("00" & g);
+							dir_max_1 <= dir_sw;		
+						end if;
 						r7 <= r2; 
 			
 						-- Reset registers
@@ -287,7 +326,7 @@ begin
 						-- r2 <= "000000000";
 						-- r3 <= "000000000";
 						end if;
-						o_valid <= '1'; 
+						o_valid <= '0'; 
 
 					
         end if;
@@ -297,26 +336,41 @@ begin
 						r4 <= r4 + (r4 sll 1); 
 						r5 <= r5; 
 						-- Sending max(r6, r7) --> max3; 
-						 max_1_3 <= r6;
-						 max_2_3 <= r7;
-						 inpd_1_3 <= dir_max_1;
-						 inpd_2_3 <= dir_reg; 
+						 -- max_1_3 <= r6;
+						 -- max_2_3 <= r7;
+						 -- inpd_1_3 <= dir_max_1;
+						 -- inpd_2_3 <= dir_reg; 
 					 
-						 r6 <= out_vmax_3;
-						 dir_max_3 <= out_dmax_3; 
+						 -- r6 <= out_vmax_3;
+						 -- dir_max_3 <= out_dmax_3; 
+						 
+						 if r6 >= r7 then 
+							r6 <= r6;
+							dir_max_3 <= dir_max_1;		
+						else 
+							r6 <= r7;
+							dir_max_3 <= dir_reg;		
+						end if;
 					end if;
         elsif v(5) = '1' then
 					if index_x >= 3 and index_y >= 2 then
 							r5 <= r4; 
 							
 							-- Sending max(r5, r6) --> max3; 
-							max_1_3 <= r5;
-							max_2_3 <= r6;
-							inpd_1_3 <= dir_reg_2;
-							inpd_2_3 <= out_dmax_3; 
+							-- max_1_3 <= r5;
+							-- max_2_3 <= r6;
+							-- inpd_1_3 <= dir_reg_2;
+							-- inpd_2_3 <= out_dmax_3; 
 
-							r4 <= out_vmax_3 sll 3;
-							dir_max_3 <= out_dmax_3; 
+							-- r4 <= out_vmax_3 sll 3;
+							-- dir_max_3 <= out_dmax_3; 
+							if r5 >= r6 then 
+								r4 <= r5 sll 3;
+								dir_max_3 <= dir_reg_2;		
+							else 
+								r6 <= r7;
+								dir_max_3 <= dir_max_3;		
+							end if;
 					end if;
         elsif v(6) = '1' then
 						r4 <= r4 - r5; 
@@ -351,6 +405,8 @@ begin
       wait until rising_edge(clk);	
 			if index_x >= 2 and index_y >= 2 then
 					v(0) <= i_valid;	
+			else 
+					v(0) <= '0';
 			end if;
 				v(7 downto 1) <= v(6 downto 0);	
 		end process;
