@@ -223,12 +223,6 @@ begin
         if v(0) = '1' then
 					if index_x >= 3 and index_y >= 2 then
 							r1 <= ("00" & a) + ("00" & h); 
-						
-							-- Sending max(g, b); 
-							-- max_1_1 <= '0' & g;
-							-- max_2_1 <= '0' & b;
-							-- inpd_1_1 <= dir_w;
-							-- inpd_2_1 <= dir_nw; 
 							if g >= b then 
 								r2 <= ("00" & g) + ("00" & a) + ("00" & h);	
 								dir_max_1 <= dir_w;															
@@ -241,35 +235,18 @@ begin
 					if index_x >= 3 and index_y >= 2 then
 						r1 <= r1 + ("00" & b) + ("00" & c);
             r3 <= r2; 
-            -- Sending max(a, d) --> max2; 
-            -- max_1_2 <= '0' & a;
-            -- max_2_2 <= '0' & d;
-            -- inpd_1_2 <= dir_n;
-            -- inpd_2_2 <= dir_ne; 
-          
-          --  r2 <= out_vmax_2 + ('0' & b) + ('0' & c);
-						
-					if a >= d then 
-						r2 <= ("00" & a) + ("00" & b) + ("00" & c);	
-						dir_max_2 <= dir_w;															
-					else 
-						r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
-						dir_max_2 <= dir_nw;		
-					end if;
+   
+						if a >= d then 
+							r2 <= ("00" & a) + ("00" & b) + ("00" & c);	
+							dir_max_2 <= dir_w;															
+						else 
+							r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
+							dir_max_2 <= dir_nw;		
+						end if;
 					end if;
         elsif v(2) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-						r1 <= r1 + ("00" & d) + ("00" & e);
-						-- Sending max(r3, r2) --> max2; 
-						-- max_1_2 <= r3;
-						-- max_2_2 <= r2;
-						-- inpd_1_2 <= dir_max_1;
-						-- inpd_2_2 <= dir_max_2; 
-					
-						-- r3 <= out_vmax_2;
-						-- dir_max_2 <= out_dmax_2;
-						-- dir_reg_2 <= out_dmax_2;
-						
+						r1 <= r1 + ("00" & d) + ("00" & e);				
 						if r3 >= r2 then 
 							r3 <= r3;
 							dir_max_2 <= dir_max_1;		
@@ -279,16 +256,6 @@ begin
 							dir_max_2 <= dir_max_2;		
 							dir_reg_2 <= dir_max_2;
 						end if;
-						-- Sending max(f, c) --> max1; 
-						-- max_1_1 <= '0' & f;
-						-- max_2_1 <= '0' & c;
-						-- inpd_1_1 <= dir_se;
-						-- inpd_2_1 <= dir_e; 
-					
-						-- r2 <= out_vmax_1 + ('0' & d) + ('0' & e);
-						-- dir_max_1 <= out_dmax_1; 
-						-- dir_reg <= out_dmax_1;
-
 						if f >= c then 
 							r2 <= ("00" & f) + ("00" & d) + ("00" & e);	
 							dir_max_1 <= dir_se;	
@@ -304,15 +271,6 @@ begin
 						
 						r4 <= r1 + ("00" & f) + ("00" & g);
 						r5 <= r3; 
-						-- Sending max(e, h) --> max1; 
-						-- max_1_1 <= '0' & e;
-						-- max_2_1 <= '0' & h;
-						-- inpd_1_1 <= dir_s;
-						-- inpd_2_1 <= dir_sw; 
-					
-						-- r6 <= out_vmax_1 + ('0' & f) + ('0' & g);
-						-- dir_max_1 <= out_dmax_1; 
-
 						if e >= h then 
 							r6 <= ("00" & e) + ("00" & f) + ("00" & g);
 							dir_max_1 <= dir_s;		
@@ -332,16 +290,7 @@ begin
         if v(4) = '1' then 
 					if index_x >= 3 and index_y >= 2 then
 						r4 <= r4 + (r4 sll 1); 
-						r5 <= r5; 
-						-- Sending max(r6, r7) --> max3; 
-						 -- max_1_3 <= r6;
-						 -- max_2_3 <= r7;
-						 -- inpd_1_3 <= dir_max_1;
-						 -- inpd_2_3 <= dir_reg; 
-					 
-						 -- r6 <= out_vmax_3;
-						 -- dir_max_3 <= out_dmax_3; 
-						 
+						r5 <= r5; 							 
 						 if r6 >= r7 then 
 							r6 <= r6;
 							dir_max_3 <= dir_max_1;		
@@ -352,16 +301,7 @@ begin
 					end if;
         elsif v(5) = '1' then
 					if index_x >= 3 and index_y >= 2 then
-							r5 <= r4; 
-							
-							-- Sending max(r5, r6) --> max3; 
-							-- max_1_3 <= r5;
-							-- max_2_3 <= r6;
-							-- inpd_1_3 <= dir_reg_2;
-							-- inpd_2_3 <= out_dmax_3; 
-
-							-- r4 <= out_vmax_3 sll 3;
-							-- dir_max_3 <= out_dmax_3; 
+							r5 <= r4; 					
 							if r5 >= r6 then 
 								r4 <= r5 sll 3;
 								dir_max_3 <= dir_reg_2;		
