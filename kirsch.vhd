@@ -109,6 +109,7 @@ begin
   
 
   o_row <= index_y;
+	o_col <= index_x;
   
   mem_blk_0 : entity work.mem(main)
 	  port map (
@@ -326,9 +327,6 @@ begin
 						-- r2 <= "000000000";
 						-- r3 <= "000000000";
 						end if;
-						o_valid <= '0'; 
-
-					
         end if;
 
         if v(4) = '1' then 
@@ -396,9 +394,10 @@ begin
 						--  r7 <= "000000000";
 						end if; 
 					end if;
-					
 				end if;
-      
+      	if v(7) /= '1' then
+						o_valid <= '0'; 
+					end if;
     end process;
 		
 		process begin 
