@@ -37,9 +37,7 @@ architecture main of kirsch is
   
   -- Variables for storing memory blocks
   signal mem_en     : std_logic_vector(2 downto 0); 
-  --------------------------------------------------------------
-  -- should be moved to the init state 
-  --------------------------------------------------------------
+
   signal mem0	   	  : std_logic_vector(7 downto 0);
   signal mem0_wen   : std_logic;
   
@@ -48,16 +46,15 @@ architecture main of kirsch is
   
   signal mem2	  	  : std_logic_vector(7 downto 0);
   signal mem2_wen   : std_logic;
-  --------------------------------------------------------------
+
   -- Inputs for the DFD
-  signal a, b, c, d, e, f, g, h, i         : unsigned(7 downto 0);
+  signal a, b, c, d, e, f, g, h, i         : unsigned(11 downto 0);
   -- registers 
   signal r1, r2, r3, r4, r5, r6, r7     : unsigned(11 downto 0);
   signal dir_reg, dir_reg_2             : direction_ty;
-  --------------------------------------------------------------
+
   -- Direction signals
   signal dir_max_1, dir_max_2, dir_max_3  : direction_ty;
-  --------------------------------------------------------------
 
 
 --  ADD MODE FUNCTIONALITY
@@ -81,7 +78,6 @@ begin
   mem0_wen <= mem_en(0) and i_valid;
   mem1_wen <= mem_en(1) and i_valid;
   mem2_wen <= mem_en(2) and i_valid;
-  
 
   o_row <= index_y;
 	o_col <= index_x;
@@ -127,17 +123,17 @@ begin
 							i <= d;
 							g <= f;
 							f <= e;
-              e <= i_pixel;
+              e <= "0000" & i_pixel;
               
 							if mem_en(0) = '1' then
-								c <= unsigned(mem1);
-								d <= unsigned(mem2);
+								c <= "0000" & unsigned(mem1);
+								d <= "0000" & unsigned(mem2);
 							elsif mem_en(1) = '1' then 
-								c <= unsigned(mem2);
-								d <= unsigned(mem0);
+								c <= "0000" & unsigned(mem2);
+								d <= "0000" & unsigned(mem0);
 							else 
-								c <= unsigned(mem0);
-								d <= unsigned(mem1);
+								c <= "0000" & unsigned(mem0);
+								d <= "0000" & unsigned(mem1);
 							end if;
 								
 							if index_x = "11111111" AND index_y = "11111111" then 
@@ -147,12 +143,8 @@ begin
 
 							elsif index_x = "11111111" and index_y < "11111111" then
 								index_y <= index_y + 1; 
-								index_x <= "00000000"; 
-								if mem_en = "100" then
-									mem_en <= "001";
-								else 
-									mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
-                end if; 
+                index_x <= "00000000"; 
+                mem_en <= mem_en rol 1;
               else 
                 index_x <= index_x + 1;
 							end if;
@@ -163,53 +155,49 @@ begin
     process begin 
       wait until rising_edge(clk);
         if v(0) = '1' then
-							r1 <= ("0000" & a) + ("0000" & h); 
+							r1 <= a + h; 
 							if g >= b then 
-								r2 <= ("0000" & g) + ("0000" & a) + ("0000" & h);	
+								r2 <= g + a + h;	
 								dir_max_1 <= dir_w;															
 							else 
-								r2 <= ("0000" & b) + ("0000" & a) + ("0000" & h);								
+								r2 <= b + a + h;								
 								dir_max_1 <= dir_nw;		
 							end if;
         elsif v(1) = '1' then
-						r1 <= r1 + ("0000" & b) + ("0000" & c);
+						r1 <= r1 + b + c;
             r3 <= r2; 
    
 						if a >= d then 
-							r2 <= ("0000" & a) + ("0000" & b) + ("0000" & c);	
+							r2 <= a + b + c;	
 							dir_max_2 <= dir_n;															
 						else 
-							r2 <= ("0000" & d) + ("0000" & b) + ("0000" & c);								
+							r2 <= d + b + c;								
 							dir_max_2 <= dir_ne;		
 						end if;
         elsif v(2) = '1' then
-						r1 <= r1 + ("0000" & d) + ("0000" & e);				
+						r1 <= r1 + d + e;				
 						if r3 >= r2 then 
-							r3 <= r3;
-							dir_max_2 <= dir_max_1;		
+							r3 <= r3;	
 							dir_reg_2 <= dir_max_1;
 						else 
-							r3 <= r2;
-							dir_max_2 <= dir_max_2;		
+							r3 <= r2;	
 							dir_reg_2 <= dir_max_2;
 						end if;
 						if c >= f then 
-              r2 <= ("0000" & c) + ("0000" & d) + ("0000" & e);								
-              dir_max_1 <= dir_e;		
+              r2 <= c + d + e;									
               dir_reg <= dir_e;
 						else 
-              r2 <= ("0000" & f) + ("0000" & d) + ("0000" & e);	
-              dir_max_1 <= dir_se;	
+              r2 <= f + d + e;	
               dir_reg	<= dir_se	;
 						end if;						
         elsif v(3) = '1' then						
-						r4 <= r1 + ("0000" & f) + ("0000" & g);
+						r4 <= r1 + f + g;
 						r5 <= r3; 
 						if e >= h then 
-							r6 <= ("0000" & e) + ("0000" & f) + ("0000" & g);
+							r6 <= e + f + g;
 							dir_max_1 <= dir_s;		
 						else 
-							r6 <= ("0000" & h) + ("0000" & f) + ("0000" & g);
+							r6 <= h + f + g;
 							dir_max_1 <= dir_sw;		
 						end if;
 						r7 <= r2; 
@@ -237,7 +225,7 @@ begin
         elsif v(6) = '1' then
 						r4 <= r4 - r5; 
 				elsif v(7) = '1' then
-						if r4 > "000101111111" then 
+						if r4 > "000101111111" then -- This number is 383 represented in 12 bits
 							o_valid <= '1'; 
 							o_edge <= '1';
 							o_dir <= dir_max_3; 
