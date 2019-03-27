@@ -158,10 +158,10 @@ begin
    
 						if a >= d then 
 							r2 <= ("00" & a) + ("00" & b) + ("00" & c);	
-							dir_max_2 <= dir_w;															
+							dir_max_2 <= dir_n;															
 						else 
 							r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
-							dir_max_2 <= dir_nw;		
+							dir_max_2 <= dir_ne;		
 						end if;
         elsif v(2) = '1' then
 						r1 <= r1 + ("00" & d) + ("00" & e);				
@@ -174,14 +174,14 @@ begin
 							dir_max_2 <= dir_max_2;		
 							dir_reg_2 <= dir_max_2;
 						end if;
-						if f >= c then 
-							r2 <= ("00" & f) + ("00" & d) + ("00" & e);	
-							dir_max_1 <= dir_se;	
-							dir_reg	<= dir_se	;
+						if c >= f then 
+              r2 <= ("00" & c) + ("00" & d) + ("00" & e);								
+              dir_max_1 <= dir_e;		
+              dir_reg <= dir_e;
 						else 
-							r2 <= ("00" & c) + ("00" & d) + ("00" & e);								
-							dir_max_1 <= dir_e;		
-							dir_reg <= dir_e;
+              r2 <= ("00" & f) + ("00" & d) + ("00" & e);	
+              dir_max_1 <= dir_se;	
+              dir_reg	<= dir_se	;
 						end if;						
         elsif v(3) = '1' then						
 						r4 <= r1 + ("00" & f) + ("00" & g);
