@@ -56,24 +56,6 @@ architecture main of kirsch is
   -- Direction signals
   signal dir_max_1, dir_max_2, dir_max_3  : direction_ty;
 
-
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
---  ADD MODE FUNCTIONALITY
-
-
 begin  
   mem0_wen <= mem_en(0) and i_valid;
   mem1_wen <= mem_en(1) and i_valid;
@@ -114,7 +96,8 @@ begin
 				if reset = '1' then
 					index_x <= "00000000";
 					index_y <= "00000000";
-					mem_en  <= "001";
+          mem_en  <= "001";
+          o_mode <= m_reset;
 				else
 					if i_valid = '1' then
 							a <= b;
@@ -139,14 +122,17 @@ begin
 							if index_x = "11111111" AND index_y = "11111111" then 
 								index_x <= "00000000"; 
 								index_y <= "00000000";
-								mem_en <= "001";
+                mem_en <= "001";
+                o_mode <= m_idle;
 
 							elsif index_x = "11111111" and index_y < "11111111" then
 								index_y <= index_y + 1; 
                 index_x <= "00000000"; 
                 mem_en <= mem_en rol 1;
+                o_mode <= m_busy;
               else 
                 index_x <= index_x + 1;
+                o_mode <= m_busy;
 							end if;
 					end if;
 			end if;
@@ -243,11 +229,9 @@ begin
 			if index_x >= 2 and index_y >= 2 then
         v(0) <= i_valid;	
       else 
-				v(0) <= '0';
+        v(0) <= '0';
 			end if;
       v(6 downto 1) <= v(5 downto 0);	
 		end process;
 		
 end architecture;
-
-
