@@ -60,6 +60,23 @@ architecture main of kirsch is
   --------------------------------------------------------------
 
 
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+--  ADD MODE FUNCTIONALITY
+
+
 begin  
   mem0_wen <= mem_en(0) and i_valid;
   mem1_wen <= mem_en(1) and i_valid;
@@ -212,7 +229,7 @@ begin
 								r4 <= r5 sll 3;
 								dir_max_3 <= dir_reg_2;		
 							else 
-								r4 <= r7 sll 3;
+								r4 <= r6 sll 3;
 								dir_max_3 <= dir_max_3;		
 							end if;
         elsif v(6) = '1' then
