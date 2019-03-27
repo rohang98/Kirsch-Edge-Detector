@@ -52,7 +52,7 @@ architecture main of kirsch is
   -- Inputs for the DFD
   signal a, b, c, d, e, f, g, h, i         : unsigned(7 downto 0);
   -- registers 
-  signal r1, r2, r3, r4, r5, r6, r7     : unsigned(9 downto 0);
+  signal r1, r2, r3, r4, r5, r6, r7     : unsigned(11 downto 0);
   signal dir_reg, dir_reg_2             : direction_ty;
   --------------------------------------------------------------
   -- Direction signals
@@ -127,7 +127,8 @@ begin
 							i <= d;
 							g <= f;
 							f <= e;
-							e <= i_pixel;
+              e <= i_pixel;
+              
 							if mem_en(0) = '1' then
 								c <= unsigned(mem1);
 								d <= unsigned(mem2);
@@ -151,9 +152,10 @@ begin
 									mem_en <= "001";
 								else 
 									mem_en <= std_logic_vector(unsigned(mem_en) sll 1);
-								end if;  
+                end if; 
+              else 
+                index_x <= index_x + 1;
 							end if;
-							index_x <= index_x + 1;
 					end if;
 			end if;
 		end process;
@@ -161,27 +163,27 @@ begin
     process begin 
       wait until rising_edge(clk);
         if v(0) = '1' then
-							r1 <= ("00" & a) + ("00" & h); 
+							r1 <= ("0000" & a) + ("0000" & h); 
 							if g >= b then 
-								r2 <= ("00" & g) + ("00" & a) + ("00" & h);	
+								r2 <= ("0000" & g) + ("0000" & a) + ("0000" & h);	
 								dir_max_1 <= dir_w;															
 							else 
-								r2 <= ("00" & b) + ("00" & a) + ("00" & h);								
+								r2 <= ("0000" & b) + ("0000" & a) + ("0000" & h);								
 								dir_max_1 <= dir_nw;		
 							end if;
         elsif v(1) = '1' then
-						r1 <= r1 + ("00" & b) + ("00" & c);
+						r1 <= r1 + ("0000" & b) + ("0000" & c);
             r3 <= r2; 
    
 						if a >= d then 
-							r2 <= ("00" & a) + ("00" & b) + ("00" & c);	
+							r2 <= ("0000" & a) + ("0000" & b) + ("0000" & c);	
 							dir_max_2 <= dir_n;															
 						else 
-							r2 <= ("00" & d) + ("00" & b) + ("00" & c);								
+							r2 <= ("0000" & d) + ("0000" & b) + ("0000" & c);								
 							dir_max_2 <= dir_ne;		
 						end if;
         elsif v(2) = '1' then
-						r1 <= r1 + ("00" & d) + ("00" & e);				
+						r1 <= r1 + ("0000" & d) + ("0000" & e);				
 						if r3 >= r2 then 
 							r3 <= r3;
 							dir_max_2 <= dir_max_1;		
@@ -192,22 +194,22 @@ begin
 							dir_reg_2 <= dir_max_2;
 						end if;
 						if c >= f then 
-              r2 <= ("00" & c) + ("00" & d) + ("00" & e);								
+              r2 <= ("0000" & c) + ("0000" & d) + ("0000" & e);								
               dir_max_1 <= dir_e;		
               dir_reg <= dir_e;
 						else 
-              r2 <= ("00" & f) + ("00" & d) + ("00" & e);	
+              r2 <= ("0000" & f) + ("0000" & d) + ("0000" & e);	
               dir_max_1 <= dir_se;	
               dir_reg	<= dir_se	;
 						end if;						
         elsif v(3) = '1' then						
-						r4 <= r1 + ("00" & f) + ("00" & g);
+						r4 <= r1 + ("0000" & f) + ("0000" & g);
 						r5 <= r3; 
 						if e >= h then 
-							r6 <= ("00" & e) + ("00" & f) + ("00" & g);
+							r6 <= ("0000" & e) + ("0000" & f) + ("0000" & g);
 							dir_max_1 <= dir_s;		
 						else 
-							r6 <= ("00" & h) + ("00" & f) + ("00" & g);
+							r6 <= ("0000" & h) + ("0000" & f) + ("0000" & g);
 							dir_max_1 <= dir_sw;		
 						end if;
 						r7 <= r2; 
@@ -216,12 +218,12 @@ begin
         if v(4) = '1' then 
 						r4 <= r4 + (r4 sll 1); 
 						r5 <= r5; 							 
-						 if r6 >= r7 then 
-							r6 <= r6;
-							dir_max_3 <= dir_max_1;		
+             if r7 >= r6 then 
+             r6 <= r7;
+							dir_max_3 <= dir_reg;	
 						else 
-							r6 <= r7;
-							dir_max_3 <= dir_reg;		
+              r6 <= r6;
+              dir_max_3 <= dir_max_1;	
 						end if;
         elsif v(5) = '1' then
 							r5 <= r4; 					
@@ -235,7 +237,7 @@ begin
         elsif v(6) = '1' then
 						r4 <= r4 - r5; 
 				elsif v(7) = '1' then
-						if r4 > 383 then 
+						if r4 > "000101111111" then 
 							o_valid <= '1'; 
 							o_edge <= '1';
 							o_dir <= dir_max_3; 
