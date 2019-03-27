@@ -29,7 +29,7 @@ end entity;
 
 architecture main of kirsch is
   -- Signal for state (valid-bit encoding)
-  signal v          : std_logic_vector(7 downto 0);
+  signal v          : std_logic_vector(6 downto 0);
 
   -- indexes to track location in 256 * 256 array
   signal index_x		: unsigned (7 downto 0);
@@ -207,7 +207,7 @@ begin
 						r4 <= r4 + (r4 sll 1); 
 						r5 <= r5; 							 
              if r7 >= r6 then 
-             r6 <= r7;
+              r6 <= r7;
 							dir_max_3 <= dir_reg;	
 						else 
               r6 <= r6;
@@ -223,19 +223,29 @@ begin
 								dir_max_3 <= dir_max_3;		
 							end if;
         elsif v(6) = '1' then
-						r4 <= r4 - r5; 
-				elsif v(7) = '1' then
-						if r4 > "000101111111" then -- This number is 383 represented in 12 bits
-							o_valid <= '1'; 
-							o_edge <= '1';
-							o_dir <= dir_max_3; 
-						else 
-							o_valid <= '1';
-							o_edge  <= '0'; 
-							o_dir   <= "000"; 
-						end if; 
+            --r4 <= r4 - r5; 
+            
+              if (r4 - r5) > "000101111111" then -- This number is 383 represented in 12 bits
+                o_valid <= '1'; 
+                o_edge <= '1';
+                o_dir <= dir_max_3; 
+              else 
+                o_valid <= '1';
+                o_edge  <= '0'; 
+                o_dir   <= "000"; 
+              end if; 
+				-- elsif v(7) = '1' then
+				-- 		if r4 > "000101111111" then -- This number is 383 represented in 12 bits
+				-- 			o_valid <= '1'; 
+				-- 			o_edge <= '1';
+				-- 			o_dir <= dir_max_3; 
+				-- 		else 
+				-- 			o_valid <= '1';
+				-- 			o_edge  <= '0'; 
+				-- 			o_dir   <= "000"; 
+				-- 		end if; 
 				end if;
-      	if v(7) /= '1' then
+      	if v(6) /= '1' then
 						o_valid <= '0'; 
 					end if;
     end process;
@@ -245,9 +255,10 @@ begin
 			if index_x >= 2 and index_y >= 2 then
         v(0) <= i_valid;	
       else 
-					v(0) <= '0';
+				v(0) <= '0';
 			end if;
-				v(7 downto 1) <= v(6 downto 0);	
+      --v(7 downto 1) <= v(6 downto 0);	
+      v(6 downto 1) <= v(5 downto 0);	
 		end process;
 		
 end architecture;
