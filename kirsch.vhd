@@ -218,7 +218,7 @@ begin
         elsif v(6) = '1' then
 						r4 <= r4 - r5; 
 				elsif v(7) = '1' then
-						if r4 >= 383 then 
+						if r4 > 383 then 
 							o_valid <= '1'; 
 							o_edge <= '1';
 							o_dir <= dir_max_3; 
