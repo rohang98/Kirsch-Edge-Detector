@@ -1,36 +1,3 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
-use work.util.all;
-use work.kirsch_synth_pkg.all;
-
-entity max is 
-  port(
-    input_1   : in unsigned(8 downto 0);
-    input_2   : in unsigned(8 downto 0);
-    inp1_dir  : in direction_ty;
-    inp2_dir  : in direction_ty;
-   
-    out_val   : out unsigned(8 downto 0);
-    out_dir   : out direction_ty
-  );
-end entity;
-
-architecture main of max is 
-begin 
-
-  process(input_1, input_2) begin
-    if input_1 >= input_2 then 
-      out_val <= input_1; 
-      out_dir <= inp1_dir; 
-    else 
-      out_val <= input_2; 
-      out_dir <= inp2_dir; 
-    end if;
-  end process; 
-
-end architecture;
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -88,15 +55,6 @@ architecture main of kirsch is
   signal r1, r2, r3, r4, r5, r6, r7     : unsigned(9 downto 0);
   signal dir_reg, dir_reg_2             : direction_ty;
   --------------------------------------------------------------
-  -- Signals for max components
-  signal max_1_1, max_1_2, max_1_3           : unsigned(8 downto 0);
-  signal max_2_1, max_2_2, max_2_3           : unsigned(8 downto 0);
-  signal inpd_1_1, inpd_1_2, inpd_1_3        : direction_ty;
-  signal inpd_2_1, inpd_2_2, inpd_2_3        : direction_ty;
-  
-  signal out_vmax_1, out_vmax_2, out_vmax_3  : unsigned(8 downto 0);
-  signal out_dmax_1, out_dmax_2, out_dmax_3  : direction_ty;
-  --------------------------------------------------------------
   -- Direction signals
   signal dir_max_1, dir_max_2, dir_max_3  : direction_ty;
   --------------------------------------------------------------
@@ -137,39 +95,6 @@ begin
 		  wren		  =>	mem2_wen,	
 		  q   	    => 	mem2
     ); 
-
-    -- max_1 : entity work.max(main)
-      -- port map (
-        -- input_1   => max_1_1,
-        -- input_2   => max_2_1,
-        -- inp1_dir  => inpd_1_1,
-        -- inp2_dir  => inpd_2_1,
-      
-        -- out_val   => out_vmax_1,
-        -- out_dir   => out_dmax_1
-      -- );    
-
-    -- max_2 : entity work.max(main)
-      -- port map (
-        -- input_1   => max_1_2,
-        -- input_2   => max_2_2,
-        -- inp1_dir  => inpd_1_2,
-        -- inp2_dir  => inpd_2_2,
-      
-        -- out_val   => out_vmax_2,
-        -- out_dir   => out_dmax_2
-      -- ); 
-
-    -- max_3 : entity work.max(main)
-      -- port map (
-        -- input_1   => max_1_3,
-        -- input_2   => max_2_3,
-        -- inp1_dir  => inpd_1_3,
-        -- inp2_dir  => inpd_2_3,
-      
-        -- out_val   => out_vmax_3,
-        -- out_dir   => out_dmax_3
-      -- ); 
 			
 		process begin
 			wait until rising_edge(clk);
@@ -216,8 +141,6 @@ begin
 			end if;
 		end process;
 		
-		
-
     process begin 
       wait until rising_edge(clk);
         if v(0) = '1' then
@@ -271,11 +194,6 @@ begin
 							dir_max_1 <= dir_sw;		
 						end if;
 						r7 <= r2; 
-			
-						-- Reset registers
-						--r1 <= "000000000";
-						-- r2 <= "000000000";
-						-- r3 <= "000000000";
         end if;
 
         if v(4) = '1' then 
@@ -304,20 +222,10 @@ begin
 							o_valid <= '1'; 
 							o_edge <= '1';
 							o_dir <= dir_max_3; 
-							-- Reset registers
-						--  r4 <= "000000000";
-						--  r5 <= "000000000";
-						--  r6 <= "000000000";
-						--  r7 <= "000000000";
 						else 
 							o_valid <= '1';
 							o_edge  <= '0'; 
 							o_dir   <= "000"; 
-							-- Reset registers
-						--  r4 <= "000000000";
-						--  r5 <= "000000000";
-						--  r6 <= "000000000";
-						--  r7 <= "000000000";
 						end if; 
 				end if;
       	if v(7) /= '1' then
@@ -328,14 +236,12 @@ begin
 		process begin 
       wait until rising_edge(clk);	
 			if index_x >= 2 and index_y >= 2 then
-					v(0) <= i_valid;	
-			else 
+        v(0) <= i_valid;	
+      else 
 					v(0) <= '0';
 			end if;
 				v(7 downto 1) <= v(6 downto 0);	
 		end process;
-
-		
 		
 end architecture;
 
