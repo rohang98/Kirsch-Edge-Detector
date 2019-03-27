@@ -223,8 +223,6 @@ begin
 								dir_max_3 <= dir_max_3;		
 							end if;
         elsif v(6) = '1' then
-            --r4 <= r4 - r5; 
-            
               if (r4 - r5) > "000101111111" then -- This number is 383 represented in 12 bits
                 o_valid <= '1'; 
                 o_edge <= '1';
@@ -234,16 +232,6 @@ begin
                 o_edge  <= '0'; 
                 o_dir   <= "000"; 
               end if; 
-				-- elsif v(7) = '1' then
-				-- 		if r4 > "000101111111" then -- This number is 383 represented in 12 bits
-				-- 			o_valid <= '1'; 
-				-- 			o_edge <= '1';
-				-- 			o_dir <= dir_max_3; 
-				-- 		else 
-				-- 			o_valid <= '1';
-				-- 			o_edge  <= '0'; 
-				-- 			o_dir   <= "000"; 
-				-- 		end if; 
 				end if;
       	if v(6) /= '1' then
 						o_valid <= '0'; 
@@ -257,7 +245,6 @@ begin
       else 
 				v(0) <= '0';
 			end if;
-      --v(7 downto 1) <= v(6 downto 0);	
       v(6 downto 1) <= v(5 downto 0);	
 		end process;
 		
