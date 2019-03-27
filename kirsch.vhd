@@ -212,7 +212,7 @@ begin
 								r4 <= r5 sll 3;
 								dir_max_3 <= dir_reg_2;		
 							else 
-								r6 <= r7;
+								r4 <= r7 sll 3;
 								dir_max_3 <= dir_max_3;		
 							end if;
         elsif v(6) = '1' then
