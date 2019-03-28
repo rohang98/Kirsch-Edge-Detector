@@ -122,10 +122,10 @@ begin
 							if index_x = "11111111" AND index_y = "11111111" then 
 								index_x <= "00000000"; 
 								index_y <= "00000000";
-                mem_en <= "001";
+                mem_en <= mem_en rol 1;
                 o_mode <= m_idle;
 
-							elsif index_x = "11111111" and index_y < "11111111" then
+							elsif index_x = "11111111" then
 								index_y <= index_y + 1; 
                 index_x <= "00000000"; 
                 mem_en <= mem_en rol 1;
