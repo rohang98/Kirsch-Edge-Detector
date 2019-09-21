@@ -1,1 +1,1 @@
-# ece327_proj
+# Kirsch Edge Detector
